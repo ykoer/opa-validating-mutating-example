@@ -121,6 +121,7 @@ spec:
             - "--addr=http://127.0.0.1:8181"
             - "--set=services.default.url=http://host.minikube.internal:8888"
             - "--set=bundles.default.resource=bundle.tar.gz"
+            - "--set=default_decision=kubernetes/admission/main"
             - "--log-format=json-pretty"
             - "--set=status.console=true"
             - "--set=decision_logs.console=true"

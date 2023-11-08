@@ -1,12 +1,13 @@
-package kubernetes.certmanager.issuer.rhcs.admission
+package kubernetes.admission
+# import data.system
 
 # ------------------------------------------------------------------------------------------------------------------ #
 #                                                   Mutating Policies                                                #
 # ------------------------------------------------------------------------------------------------------------------ #
 
 patch[patchCode] {
-	# isValidRequest
-	# isCreateOrUpdate
+	isValidRequest
+	isCreateOrUpdate
 	input.request.kind.kind == "Certificate"
 	input.request.object.spec.privateKey.algorithm != "ECDSA"
 	

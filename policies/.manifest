@@ -1,3 +1,0 @@
-{
-    "roots": ["kubernetes/certmanager/issuer/rhcs/admission", "system"]
-}

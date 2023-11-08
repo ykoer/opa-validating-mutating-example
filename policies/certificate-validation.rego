@@ -1,5 +1,5 @@
-package kubernetes.certmanager.issuer.rhcs.admission
-
+package kubernetes.admission
+ 
 deny[msg] {
 	input.request.kind.kind == "Certificate"
 	input.request.object.spec.issuerRef.group == "cert-manager.io"
