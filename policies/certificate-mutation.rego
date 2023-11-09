@@ -17,7 +17,21 @@ patch[patchCode] {
 		"value": "ECDSA",
 	}
 
-	log_msg := "########################"
-    print(log_msg, {"severity": "info"})
-
+	# log_msg := "########################"
+    # print(log_msg, {"severity": "info"})
 }
+
+
+patch[patchCode] {
+	isValidRequest
+	isCreateOrUpdate
+	input.request.kind.kind == "Certificate"
+	input.request.object.spec.privateKey.size != 384
+	
+    patchCode = {
+		"op": "replace",
+		"path": "/spec/privateKey/size",
+		"value": 384,
+	}
+}
+

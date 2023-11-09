@@ -1,0 +1,77 @@
+{
+  "apiVersion": "admission.k8s.io/v1",
+  "kind": "AdmissionReview",
+  "request": {
+    "dryRun": false,
+    "kind": {
+      "group": "cert-manager.io",
+      "kind": "Certificate",
+      "version": "v1"
+    },
+    "name": "cert-user-invalid-o-ou",
+    "namespace": "default",
+    "object": {
+      "apiVersion": "cert-manager.io/v1",
+      "kind": "Certificate",
+      "metadata": {
+        "creationTimestamp": "2023-11-08T14:06:48Z",
+        "generation": 1,
+        "name": "cert-user-invalid-o-ou",
+        "namespace": "default",
+        "uid": "5d8d75a1-5cc2-41c8-8e94-718a614172b7"
+      },
+      "spec": {
+        "commonName": "cert1",
+        "isCA": true,
+        "issuerRef": {
+          "group": "cert-manager.io",
+          "kind": "ClusterIssuer",
+          "name": "rhcs-issuer-user"
+        },
+        "privateKey": {
+          "algorithm": "RSA",
+          "size": 2048
+        },
+        "secretName": "cert-user-invalid-o-ou",
+        "subject": {
+          "organizationalUnits": [
+            "serviceaccounts"
+          ],
+          "organizations": [
+            "mpaas"
+          ]
+        }
+      }
+    },
+    "oldObject": null,
+    "operation": "CREATE",
+    "options": {
+      "apiVersion": "meta.k8s.io/v1",
+      "fieldManager": "kubectl-client-side-apply",
+      "kind": "CreateOptions"
+    },
+    "requestKind": {
+      "group": "cert-manager.io",
+      "kind": "Certificate",
+      "version": "v1"
+    },
+    "requestResource": {
+      "group": "cert-manager.io",
+      "resource": "certificates",
+      "version": "v1"
+    },
+    "resource": {
+      "group": "cert-manager.io",
+      "resource": "certificates",
+      "version": "v1"
+    },
+    "uid": "c57f69df-8f1e-4c70-8abc-17a0b4e376cd",
+    "userInfo": {
+      "groups": [
+        "system:masters",
+        "system:authenticated"
+      ],
+      "username": "minikube-user"
+    }
+  }
+}

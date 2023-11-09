@@ -111,7 +111,7 @@ spec:
         # authentication and authorization on the daemon. See the Security page for
         # details: https://www.openpolicyagent.org/docs/security.html.
         - name: opa
-          image: openpolicyagent/opa:0.59.0
+          image: openpolicyagent/opa:0.58.0
           args:
             - "run"
             - "--server"
@@ -157,13 +157,46 @@ EOF
 kubectl label ns kube-system openpolicyagent.org/webhook=ignore
 kubectl label ns opa openpolicyagent.org/webhook=ignore
 
+# If we install a mutating webhook for OPA, a validating webhook is not required because it can validate and mutate.
+# oc create -f - <<EOF
+# kind: ValidatingWebhookConfiguration
+# apiVersion: admissionregistration.k8s.io/v1
+# metadata:
+#   name: opa-validating-webhook
+# webhooks:
+#   - name: validating-webhook.openpolicyagent.org
+#     namespaceSelector:
+#       matchExpressions:
+#       - key: openpolicyagent.org/webhook
+#         operator: NotIn
+#         values:
+#         - ignore
+#     rules:
+#       - apiGroups:
+#           - cert-manager.io
+#         apiVersions:
+#           - v1
+#         operations:
+#           - CREATE
+#           - UPDATE
+#         resources:
+#           - certificates
+#     clientConfig:
+#       caBundle: $(cat ca.crt | base64 | tr -d '\n')
+#       service:
+#         namespace: opa
+#         name: opa
+#     admissionReviewVersions: ["v1"]
+#     sideEffects: None
+# EOF
+
 oc create -f - <<EOF
-kind: ValidatingWebhookConfiguration
+kind: MutatingWebhookConfiguration
 apiVersion: admissionregistration.k8s.io/v1
 metadata:
-  name: opa-validating-webhook
+  name: opa-mutating-webhook
 webhooks:
-  - name: validating-webhook.openpolicyagent.org
+  - name: mutating-webhook.openpolicyagent.org
     namespaceSelector:
       matchExpressions:
       - key: openpolicyagent.org/webhook
@@ -188,3 +221,18 @@ webhooks:
     admissionReviewVersions: ["v1"]
     sideEffects: None
 EOF
+
+
+echo "Waiting until all opa pod is started ..."
+while true; do
+    if kubectl get ns opa &> /dev/null; then
+        not_running_pods=$(kubectl get pods -n opa | grep -v "STATUS\|Running" | wc -l)
+        running_pods=$(kubectl get pods -n opa | grep "Running" | wc -l)
+        printf "Running Pods: $running_pods / $((not_running_pods + running_pods))\r"
+        if [ $not_running_pods -eq 0 ]; then
+            break
+        fi
+    fi
+    sleep 5
+done
+sleep 3
